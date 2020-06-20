@@ -1,16 +1,27 @@
-import patreon
+from selenium import webdriver
 
-client_id = "hrGEn5uURNyJgs18LizOBhFi5HevvZqXBSwvLSf7oU9j5j0eOcybj7gaDMFjzGjh"
-client_secret = "r0dam9X9vpQ2o4nqAJm3VbPizcelQg0mIQZacBq0OStUV4P8_T8w3AWZfCpKBEGs"
-# Here we go boys. We're gonna need CLOUD COMPUTING for this token retrieval (FUCK 3-LEGGED OAUTH)
-# https://epsagon.com/blog/aws-lambda-and-python-flask-getting-started/
-def oauth():
-    oauth_client = patreon.OAuth(client_id, client_secret)
-    tokens = oauth_client.get_tokens('abc123', 'oauth/redirect')
-    access_token = tokens['access_token']
 
-    api_client = patreon.API(access_token)
-    user_response = api_client.get_identity()
-    user = user_response.data()
+def setup_driver():
+    """
+    Configure and return Selenium driver class
+    """
+    driver = webdriver.Chrome(executable_path='./chromedriver.exe')
+    driver.implicitly_wait(0.5)
+    return driver
 
-oauth()
+def get_campaigns(search_term):
+    """
+        Retrieve all campaign urls based on search term
+    """
+    driver = setup_driver()
+    driver.get(f'https://www.patreon.com/search?q={search_term}')
+
+    campaigns = driver.find_elements_by_xpath("//a[@data-tag='campaign-result-avatar']")
+    for campaign in campaigns:
+        print(campaign.get_attribute('href'))
+
+
+def main():
+    get_campaigns('ti')
+
+main()
