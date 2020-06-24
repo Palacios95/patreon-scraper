@@ -36,15 +36,18 @@ def get_campaigns(driver, search_term):
     driver.get(f"https://www.patreon.com/search?q={search_term}")
 
     campaigns = driver.find_elements_by_xpath("//a[@data-tag='campaign-result-avatar']")
-    for campaign in campaigns:
-        print(campaign.get_attribute("href"))
+    return list(map(lambda x: x.get_attribute("href"), campaigns))
+
+
+def get_campaign_info(driver, campaign_url):
+    print("")
 
 
 def scrape():
     driver = setup_driver()
     terms = generate_terms()
     for term in terms:
-        get_campaigns(driver, term)
+        print(get_campaigns(driver, term))
 
 
 scrape()
