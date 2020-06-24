@@ -1,3 +1,4 @@
 env
 .vscode
 chromedriver.exe
+debug.log
