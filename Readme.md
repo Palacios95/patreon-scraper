@@ -11,5 +11,5 @@ Scrapes patreon for campaign information
 ### How to Run
 
 * *Optional* Create virtual environment: `python -m env env`
-* Install pip packages: `pip install requirements.txt`
+* Install pip packages: `pip install -r requirements.txt`
 * Run: `python scraper.py`

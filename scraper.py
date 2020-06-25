@@ -25,9 +25,7 @@ def setup_driver():
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--silent")
     chrome_options.add_argument("--log-level=3")
-    driver = webdriver.Chrome(
-        executable_path="./chromedriver.exe", options=chrome_options
-    )
+    driver = webdriver.Chrome(executable_path="./chromedriver", options=chrome_options)
     driver.implicitly_wait(0.5)
     return driver
 
