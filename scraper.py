@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
 from functools import reduce
 import string
 
@@ -22,6 +23,8 @@ def setup_driver():
     """
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--silent")
+    chrome_options.add_argument("--log-level=3")
     driver = webdriver.Chrome(
         executable_path="./chromedriver.exe", options=chrome_options
     )
@@ -29,7 +32,7 @@ def setup_driver():
     return driver
 
 
-def get_campaigns(driver, search_term):
+def get_campaign_urls(driver, search_term):
     """
         Retrieve all campaign urls based on search term
     """
@@ -40,14 +43,50 @@ def get_campaigns(driver, search_term):
 
 
 def get_campaign_info(driver, campaign_url):
-    print("")
+    campaign_info = {
+        "creator_id": campaign_url.split("/")[-1],
+        "reward_tiers": [],
+        "patron_count": 0,
+        "monthly_income": 0,
+    }
+    driver.get(campaign_url)
+
+    try:
+        campaign_info["reward_tiers"] = list(
+            map(
+                lambda x: x.text,
+                driver.find_elements_by_xpath(
+                    "//div[@data-tag='reward-tier-card']//div[starts-with(text(), '$')]"
+                ),
+            )
+        )
+    except NoSuchElementException:
+        print(f"Could not find reward tiers in url {campaign_url}")
+
+    try:
+        campaign_info["patron_count"] = driver.find_element_by_xpath(
+            "//div[@data-tag='CampaignPatronEarningStats-patron-count']/h2"
+        ).text
+    except NoSuchElementException:
+        print(f"Could not find patron count in url {campaign_url}")
+
+    try:
+        campaign_info["monthly_income"] = driver.find_element_by_xpath(
+            "//div[@data-tag='CampaignPatronEarningStats-earnings']/h2"
+        ).text
+    except NoSuchElementException:
+        print(f"Could not find monthly income in url {campaign_url}")
+
+    return campaign_info
 
 
 def scrape():
     driver = setup_driver()
     terms = generate_terms()
     for term in terms:
-        print(get_campaigns(driver, term))
+        campaign_urls = get_campaign_urls(driver, term)
+        for url in campaign_urls:
+            print(get_campaign_info(driver, url))
 
 
 scrape()
