@@ -88,6 +88,7 @@ def scrape():
     driver = setup_driver()
     terms = generate_terms()
     campaign_results = []
+    # Campaign results will be written to output.json once all campaigns are scraped or if an error occurs.
     with open("output.json", "w+") as f:
         try:
             for term in terms:
