@@ -95,7 +95,9 @@ def scrape():
                 campaign_urls = get_campaign_urls(driver, term)
                 for url in campaign_urls:
                     campaign_info = get_campaign_info(driver, url)
+                    print(f"Appending {campaign_info}")
                     campaign_results.append(campaign_info)
+            print("Scrape successful!")
         except:
             print(
                 "An error has occurred. Will attempt to write campaign results to output.json"
@@ -103,6 +105,7 @@ def scrape():
         finally:
             f.write(json.dumps(campaign_results))
             f.close()
+            print("Write to output.json Complete")
 
 
 scrape()
