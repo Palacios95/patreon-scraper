@@ -3,9 +3,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from functools import reduce
 import string
-import sys
 import json
-import os
 
 
 def generate_terms():
