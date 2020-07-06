@@ -2,7 +2,14 @@ import pandas as pd
 import numpy as np
 import re
 
-patron_df = pd.read_json(r"output.json")
+patron_df = pd.read_json(r"patreon_data/output.json")
+
+print(patron_df.reward_tiers)
+
+patron_df.reward_tiers = patron_df.reward_tiers.apply(
+    lambda x: list(map(lambda y: re.sub("[^0-9.]", "", y), x))
+)
+
 # grab number of users without a creator_id
 no_cid = len(patron_df.loc[patron_df["creator_id"].str.contains("user?")].index)
 # grab number of rows without any patorns
@@ -29,7 +36,6 @@ for row in patron_df["reward_tiers"]:
     except IndexError:
         pass
 print("unique values for reward_tiers:")
-values = list(map(lambda x: re.sub("[^0-9.]", "", x), values))
 print(set(values))
 
 # calc avg_reward TODO: Calc average reward as new column, currently 0
