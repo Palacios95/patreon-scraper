@@ -2,9 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 
-patron_df = pd.read_json(r"patreon_data/output.json")
-
-print(patron_df.reward_tiers)
+patron_df = pd.read_json(r"output.json")
 
 patron_df.reward_tiers = patron_df.reward_tiers.apply(
     lambda x: list(map(lambda y: re.sub("[^0-9.]", "", y), x))
@@ -28,18 +26,32 @@ patron_df = patron_df.loc[~patron_df["patron_count"].isnull()]
 patron_df = patron_df.loc[patron_df["monthly_income"] != "$0"]
 patron_df = patron_df.reset_index(drop=True)
 
-# remove $ character from reward_tiers TODO: clean reward tiers so that all entries are integers
 values = []
 for row in patron_df["reward_tiers"]:
     try:
         values.append(row[0])
     except IndexError:
         pass
-print("unique values for reward_tiers:")
-print(set(values))
+# print("unique values for reward_tiers:")
+# print(set(values))
 
 # calc avg_reward TODO: Calc average reward as new column, currently 0
-patron_df["avg_reward"] = np.mean([0])
+patron_df["avg_reward"] = patron_df['reward_tiers']
+
+for index, row in patron_df.iterrows():
+    for x in row['reward_tiers']:
+        try:
+            x = float(x)
+        except ValueError:
+            print(row)
+            patron_df.drop(patron_df.index[row.name])
+
+# print(type(patron_df["avg_reward"][0][2]))
+with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+    print(patron_df.loc[[4684]])
+
+test_df = patron_df["avg_reward"][0]
+print('test \n', test_df)
 
 # calc adj_monthly_income- TODO: Replace Monthly Income with num_patrons * avg revward tier
 patron_df["adj_monthly_income"] = patron_df["monthly_income"]
