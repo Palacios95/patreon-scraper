@@ -5,8 +5,7 @@ import re
 patron_df = pd.read_json(r"output.json")
 
 patron_df.reward_tiers = patron_df.reward_tiers.apply(
-    lambda x: list(map(lambda y: re.sub("[^0-9.]", "", y), x))
-)
+    lambda x: list(map(lambda y: re.sub("[^0-9.]", "", y), x)))
 
 # grab number of users without a creator_id
 no_cid = len(patron_df.loc[patron_df["creator_id"].str.contains("user?")].index)
@@ -26,35 +25,31 @@ patron_df = patron_df.loc[~patron_df["patron_count"].isnull()]
 patron_df = patron_df.loc[patron_df["monthly_income"] != "$0"]
 patron_df = patron_df.reset_index(drop=True)
 
-values = []
-for row in patron_df["reward_tiers"]:
-    try:
-        values.append(row[0])
-    except IndexError:
-        pass
-# print("unique values for reward_tiers:")
-# print(set(values))
 
 # calc avg_reward TODO: Calc average reward as new column, currently 0
-patron_df["avg_reward"] = patron_df['reward_tiers']
-
+bad_row_indicies = []
 for index, row in patron_df.iterrows():
     for x in row['reward_tiers']:
         try:
             x = float(x)
         except ValueError:
-            print(row)
-            patron_df.drop(patron_df.index[row.name])
+            bad_row_indicies.append(row.name)
 
-# print(type(patron_df["avg_reward"][0][2]))
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-    print(patron_df.loc[[4684]])
+# Show number of rows before drop
+print('# of rows before drop \n', len(patron_df))
+final_df = patron_df.drop(patron_df.index[bad_row_indicies])
+final_df = final_df.reset_index(drop=True)
+print('# of rows in final df \n', len(final_df))
 
-test_df = patron_df["avg_reward"][0]
-print('test \n', test_df)
+final_df['reward_tiers'] = final_df['reward_tiers'].apply(lambda x: list(map(float, x)))
+final_df['average_reward'] = final_df['reward_tiers'].apply(lambda x: round(np.mean(x), 2))
+
+print(final_df)
 
 # calc adj_monthly_income- TODO: Replace Monthly Income with num_patrons * avg revward tier
-patron_df["adj_monthly_income"] = patron_df["monthly_income"]
+final_df['patron_count'] = final_df['patron_count'].apply(lambda x: list(map(float, x)))
+print(type(final_df['patron_count'][0]))
+# final_df["adj_monthly_income"] = final_df["patron_count"] * final_df['average_reward']
 
 with pd.option_context("display.max_rows", 10, "display.max_columns", None):
     print(patron_df)
