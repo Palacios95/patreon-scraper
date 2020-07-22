@@ -8,6 +8,7 @@ patron_df.reward_tiers = patron_df.reward_tiers.apply(
     lambda x: list(map(lambda y: y.replace(",", ""), x))
 )
 
+# Ensure only creators with dollar amount reward tiers are in dataset
 non_dollar_reward_tier_row_ids = []
 for index, row in patron_df.iterrows():
     for reward_tier in row["reward_tiers"]:
@@ -18,6 +19,11 @@ for index, row in patron_df.iterrows():
             break
 
 patron_df.drop(patron_df.index[non_dollar_reward_tier_row_ids], inplace=True)
+
+# Remove dollar signs from reward tiers
+patron_df.reward_tiers = patron_df.reward_tiers.apply(
+    lambda x: list(map(lambda y: y.replace("$", ""), x))
+)
 
 # grab number of users without a creator_id
 no_cid = len(patron_df.loc[patron_df["creator_id"].str.contains("user?")].index)
