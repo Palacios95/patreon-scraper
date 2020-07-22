@@ -5,7 +5,7 @@ import re
 patron_df = pd.read_json(r"patreon_data/output.json")
 
 patron_df.reward_tiers = patron_df.reward_tiers.apply(
-    lambda x: list(map(lambda y: re.sub("[^0-9.]", "", y), x))
+    lambda x: list(map(lambda y: y.replace(",", ""), x))
 )
 
 non_dollar_reward_tier_row_ids = []
@@ -61,7 +61,9 @@ final_df["average_reward"] = final_df["reward_tiers"].apply(
 print(final_df)
 
 # calc adj_monthly_income- TODO: Replace Monthly Income with num_patrons * avg revward tier
-final_df["patron_count"] = final_df["patron_count"].apply(lambda x: list(map(float, x)))
+final_df["patron_count"] = final_df["patron_count"].apply(
+    lambda x: list(map(float, x.replace(",", "")))
+)
 print(type(final_df["patron_count"][0]))
 # final_df["adj_monthly_income"] = final_df["patron_count"] * final_df['average_reward']
 
