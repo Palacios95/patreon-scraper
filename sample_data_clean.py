@@ -69,8 +69,12 @@ print(final_df)
 # calc adj_monthly_income- TODO: Replace Monthly Income with num_patrons *
 # avg reward tier
 final_df["patron_count"] = final_df["patron_count"].apply(
+<<<<<<< HEAD
     lambda x: float(x.replace(",", ""))
 )
+=======
+    lambda x: float(x.replace(",", "")))
+>>>>>>> a4d61d5eba67e48d032e43651ee075d9e28d7916
 print(type(final_df["patron_count"][0]))
 # final_df["adj_monthly_income"] = final_df["patron_count"] * final_df['average_reward']
 
