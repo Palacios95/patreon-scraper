@@ -66,15 +66,16 @@ final_df["average_reward"] = final_df["reward_tiers"].apply(
 
 print(final_df)
 
-# calc adj_monthly_income- TODO: Replace Monthly Income with num_patrons * avg revward tier
+# calc adj_monthly_income- TODO: Replace Monthly Income with num_patrons *
+# avg reward tier
 final_df["patron_count"] = final_df["patron_count"].apply(
-    lambda x: list(map(float, x.replace(",", "")))
+    lambda x: float(x.replace(",", ""))
 )
 print(type(final_df["patron_count"][0]))
 # final_df["adj_monthly_income"] = final_df["patron_count"] * final_df['average_reward']
 
 with pd.option_context("display.max_rows", 10, "display.max_columns", None):
-    print(patron_df)
+    print(final_df)
 print("rows with no patrons", no_patrons)
 print("rows with no creator id", no_cid)
 print("rows with no monthly income", no_income)
